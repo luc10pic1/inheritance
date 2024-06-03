@@ -1,8 +1,8 @@
 #include "pieces.h"
 
-bool Pieces::destinationBox(Chessboard &chess,int x,int y) {
+bool Pieces::destinationBox(const Chessboard &chess,const int x,const int y) {
     bool result=false;
-    if(!chess.buffer[x][y] || chess.buffer[x][y]->getColor()!=color){
+    if(!chess.buffer[x][y] || chess.buffer[x][y]->color!=color){
         result=true;
     }
     return result;
@@ -17,8 +17,10 @@ bool Torre::isLegalMove(Chessboard &chessboard,int x,int y) {
                 i++;
             else
                 i--;
-            if(chessboard.buffer[this->x][i])
-                result=false;
+            if(i!=y) {
+                if (chessboard.buffer[this->x][i])
+                    result = false;
+            }
         }
     }
     else if(this->y==y){
@@ -28,8 +30,10 @@ bool Torre::isLegalMove(Chessboard &chessboard,int x,int y) {
                 i++;
             else
                 i--;
-            if(chessboard.buffer[i][this->y])
-                result=false;
+            if(i!=x) {
+                if (chessboard.buffer[i][this->y])
+                    result = false;
+            }
         }
     }
     else
@@ -164,8 +168,6 @@ bool Pedone::isLegalMove(Chessboard &chessboard, int x, int y) {
     }
     if(y==this->y && x!=this->x && !capture)
         result=false;
-    if(result)
-        firstMove=false;
     capture=false;
     this->x=a;
     this->y=b;

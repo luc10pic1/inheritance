@@ -19,9 +19,8 @@ public:
     virtual void printPieceString()=0;
     virtual void printPiece()=0;
     virtual bool isLegalMove(Chessboard &chessboard,int x,int y)=0;
-    void substitionPedone ();
 
-    virtual void setMove(int x, int y){
+    virtual void setMove(const int x,const int y){
         this->x=x;
         this->y=y;
     }
@@ -29,17 +28,11 @@ public:
     ColorPed getColor()const{
         return color;
     }
-    int getX()const{
-        return x;
-    }
-    int getY()const{
-        return y;
+    void setFirstMove(){
+        this->firstMove=false;
     }
     bool isFirstMove()const{
         return firstMove;
-    }
-    void setFirstMove(){
-        this->firstMove=false;
     }
     void setCapture(const bool capture){
         this->capture=capture;
@@ -49,12 +42,12 @@ public:
     }
 
 protected:
-    bool destinationBox(Chessboard &chessboard,int x,int y);
     ColorPed color;
     int x;
     int y;
     bool capture{false};
     bool firstMove{true};
+    bool destinationBox(const Chessboard &chessboard,const int x,const int y);
 };
 
 class Torre:public Pieces{

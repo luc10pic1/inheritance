@@ -75,24 +75,21 @@ int main() {
     std::cout<<"Benvenuto\nStai per iniziare una partita a scacchi!!\nBuon divertimento\n";
     while(!chessboard.isScaccoMattoB() && !chessboard.isScaccoMattoW()) {
         chessboard.printChessboard();
-        int startY;
-        int startX;
-        int arrX;
-        int arrY;
         chessboard.getTurn() == ColorPed::white ? std::cout << "Tocca al Bianco\n" : std::cout << "Tocca al Nero\n";
-        chessboard.insertCoordinate(startX,startY,arrX,arrY);
-        chessboard.doMove(startX,startY,arrX,arrY);
+        chessboard.insertCoordinate();
+        chessboard.doMove();
         while(chessboard.isAutoScacco()){
             std::cout<<"Mossa non valida perchè si verifica un auto scacco.\nRiprovare\n";
-            chessboard.cancelMove(startX,startY,arrX,arrY);
-            chessboard.insertCoordinate(startX,startY,arrX,arrY);
-            chessboard.doMove(startX,startY,arrX,arrY);
+            chessboard.cancelMove();
+            chessboard.insertCoordinate();
+            chessboard.doMove();
         }
-        if(chessboard.buffer[arrX][arrY]->isCapture()) {
+        if(chessboard.buffer[chessboard.getArrX()][chessboard.getArrY()]->isCapture()) {
             std::cout << "Pezzo catturato\n";
-            chessboard.buffer[arrX][arrY]->setCapture(false);
+            chessboard.buffer[chessboard.getArrX()][chessboard.getArrY()]->setCapture(false);
         }
-        chessboard.checkSubstionPedone(arrX,arrY);
+        chessboard.buffer[chessboard.getArrX()][chessboard.getArrY()]->setFirstMove();
+        chessboard.checkSubstionPedone();
         std::cout<<"Mossa eseguita!\n";
         chessboard.checkScacco();
         ColorPed colorTurn=chessboard.getTurn()==ColorPed::white?ColorPed::black:ColorPed::white;

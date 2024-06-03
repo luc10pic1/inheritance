@@ -1,6 +1,6 @@
 #include "chessboard.h"
 
-void Chessboard::printChessboard() {
+void Chessboard::printChessboard()const {
     std::cout<<"  ";
     for(int i=0;i<8;i++){
         std::cout<<" "<<i<<" ";
@@ -24,7 +24,7 @@ void Chessboard::printChessboard() {
     std::cout<<"\n";
 }
 
-void Chessboard::insertCoordinate(int &startX, int &startY, int &arrX, int &arrY) {
+void Chessboard::insertCoordinate() {
     std::cout << "Inserisci le coordinate del pezzo da spostare \nx: ";
     std::cin >> startX;
     std::cout << "y: ";
@@ -41,15 +41,15 @@ void Chessboard::insertCoordinate(int &startX, int &startY, int &arrX, int &arrY
     std::cin >> arrY;
     while(arrY==startY && arrX==startX){
         std::cout<<"Il pezzo deve spostarsi!";
-        insertCoordinate(startX,startY,arrX,arrY);
+        insertCoordinate();
     }
     while (!checkCoordinates(arrX, arrY ,false)) {
-        insertCoordinate(startX,startY,arrX,arrY);
+        insertCoordinate();
     }
     while (!buffer[startX][startY]->isLegalMove(*this,arrX,arrY)){
         std::cout<<"Il pezzo selezionato non può compiere la mossa indicata\nRiprovare\n";
         buffer[startX][startY]->setCapture(false);
-        insertCoordinate(startX,startY,arrX,arrY);
+        insertCoordinate();
     }
     buffer[startX][startY]->setCapture(false);
 }
@@ -71,6 +71,55 @@ bool Chessboard::checkCoordinates(int x, int y,bool start) {
     return result;
 }
 
+void Chessboard::doMove() {
+    Re* king=dynamic_cast<Re*>(buffer[startX][startY]);
+    if(king){
+        if(buffer[startX][startY]->getColor()==ColorPed::white){
+            xW=arrX;
+            yW=arrY;
+        }
+        else{
+            xB=arrX;
+            yB=arrY;
+        }
+    }
+    if(buffer[arrX][arrY]){
+        if(buffer[arrX][arrY]->getColor()==ColorPed::white)
+            captureW.push_front(buffer[arrX][arrY]);
+        else
+            captureB.push_front(buffer[arrX][arrY]);
+        buffer[startX][startY]->setCapture(true);
+    }
+
+    buffer[arrX][arrY]=buffer[startX][startY];
+    buffer[arrX][arrY]->setMove(arrX,arrY);
+    buffer[startX][startY]= nullptr;
+}
+void Chessboard::cancelMove() {
+    Re* king=dynamic_cast<Re*>(buffer[arrX][arrY]);
+    if(king){
+        if(buffer[arrX][arrY]->getColor()==ColorPed::white){
+            xW=startX;
+            yW=startY;
+        }
+        else{
+            xB=startX;
+            yB=startY;
+        }
+    }
+    buffer[arrX][arrY]->setMove(startX,startY);
+    buffer[startX][startY]=buffer[arrX][arrY];
+    if(buffer[startX][startY]->isCapture()){
+        buffer[startX][startY]->setCapture(false);
+        if(buffer[startX][startY]->getColor()==ColorPed::white)
+            buffer[arrX][arrY]=takeCaptureB();
+        else
+            buffer[arrX][arrY]=takeCaptureW();
+    }
+    else
+        buffer[arrX][arrY]=nullptr;
+}
+
 void Chessboard::doMove(int startX, int startY, int arrX, int arrY) {
     Re* king=dynamic_cast<Re*>(buffer[startX][startY]);
     if(king){
@@ -85,9 +134,9 @@ void Chessboard::doMove(int startX, int startY, int arrX, int arrY) {
     }
     if(buffer[arrX][arrY]){
         if(buffer[arrX][arrY]->getColor()==ColorPed::white)
-            insertCaptureW(buffer[arrX][arrY]);
+            captureW.push_front(buffer[arrX][arrY]);
         else
-            insertCaptureB(buffer[arrX][arrY]);
+            captureB.push_front(buffer[arrX][arrY]);
         buffer[startX][startY]->setCapture(true);
     }
 
@@ -284,62 +333,52 @@ bool Chessboard::canMoveK(int x, int y, ColorPed whoCheck) {
     return result;
 }
 
-void Chessboard::checkSubstionPedone(int arrX,int arrY) {
+void Chessboard::checkSubstionPedone() {
     Pedone* pedone=dynamic_cast<Pedone*>(buffer[arrX][arrY]);
     if(pedone) {
-        if (arrY == 0 && buffer[arrX][arrY]->getColor() == ColorPed::white) {
-            bool result=false;
-            for(auto it=captureW.begin();!result && it!=captureW.end();it++){
-                Pedone*element=dynamic_cast<Pedone*>(*it);
-                if(!element)
-                    result=true;
-            }
-            if(result)
-                substionPedone(arrX, arrY, captureW);
-            else {
-                buffer[arrX][arrY] = nullptr;
-                std::cout << "Nessun pezzo con cui sostituire il pedone\n";
-            }
-        }
-        if(arrY==7 && buffer[arrX][arrY]->getColor()==ColorPed::black) {
-            bool result=false;
-            for(auto it=captureB.begin();!result && it!=captureB.end();it++){
-                Pedone*element=dynamic_cast<Pedone*>(*it);
-                if(!element)
-                    result=true;
-            }
-            if(result)
-                substionPedone(arrX, arrY, captureB);
-            else {
-                buffer[arrX][arrY] = nullptr;
-                std::cout << "Nessun pezzo con cui sostituire il pedone\n";
-            }
-        }
+        if (arrY == 0 && buffer[arrX][arrY]->getColor() == ColorPed::white)
+            substitionPedone(captureW);
+
+        if(arrY==7 && buffer[arrX][arrY]->getColor()==ColorPed::black)
+            substitionPedone(captureB);
+
     }
 }
 
-void Chessboard::substionPedone(int arrX, int arrY, std::list<Pieces *> color) {
-    std::cout<<"Digitare il numero vicino al pezzo con cui sostituire il pedone\n";
-    printCapture(color);
-    int i;
-    std::cin>>i;
-    while(i > color.size() || i<1){
-        std::cout<<"Valore non valido. Riprovare:\n";
-        std::cin>>i;
+void Chessboard::substitionPedone(std::list<Pieces *> color) {
+    bool result=false;
+    for(auto it= color.begin(); !result && it != color.end(); it++){
+        Pedone*element=dynamic_cast<Pedone*>(*it);
+        if(!element)
+            result=true;
     }
-    auto it= color.begin();
-    for(int j=1;j<i;j++){
-        it++;
-    }
-    while(Pedone* element=dynamic_cast<Pedone*>(*it)){
-        std::cout<<"Non puoi sostituire un pedone con un altro pedone\n";
-        std::cin>>i;
-        it=color.begin();
-        for(int j=1;j<i;j++){
+    if(result) {
+        std::cout << "Digitare il numero vicino al pezzo con cui sostituire il pedone\n";
+        printCapture(color);
+        int i;
+        std::cin >> i;
+        while (i > color.size() || i < 1) {
+            std::cout << "Valore non valido. Riprovare:\n";
+            std::cin >> i;
+        }
+        auto it = color.begin();
+        for (int j = 1; j < i; j++) {
             it++;
         }
+        while (Pedone *element = dynamic_cast<Pedone *>(*it)) {
+            std::cout << "Non puoi sostituire un pedone con un altro pedone\n";
+            std::cin >> i;
+            it = color.begin();
+            for (int j = 1; j < i; j++) {
+                it++;
+            }
+        }
+        buffer[arrX][arrY] = *it;
+        color.erase(it);
+        std::cout << "Pedone sostituito\n";
     }
-    buffer[arrX][arrY]=*it;
-    color.erase(it);
-    std::cout<<"Pedone sostituito\n";
+    else {
+        buffer[arrX][arrY] = nullptr;
+        std::cout << "Nessun pezzo con cui sostituire il pedone\n";
+    }
 }

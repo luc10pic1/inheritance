@@ -21,14 +21,14 @@ public:
         }
     };
 
-    void printChessboard();
+    void printChessboard()const;
 
-    void insertCoordinate(int & startX,int &startY,int &arrX,int & arrY);
+    void insertCoordinate();
 
-    void doMove(int startX,int startY,int arrX,int arrY);
-    void cancelMove(int startX,int startY,int arrX,int arrY);
+    void doMove();
+    void cancelMove();
 
-    void checkSubstionPedone(int arrX,int arrY);
+    void checkSubstionPedone();
 
     bool isAutoScacco();
     bool checkScacco();
@@ -41,12 +41,17 @@ public:
     bool isScaccoMattoB()const{
         return scaccoMattoB;
     }
-
-    void setTurn(ColorPed color){
+    void setTurn(const ColorPed color){
         turn=color;
     }
     ColorPed getTurn()const{
         return turn;
+    }
+    int getArrX()const{
+        return arrX;
+    }
+    int getArrY()const{
+        return arrY;
     }
 
 private:
@@ -70,16 +75,9 @@ private:
     // METHODS
     bool canMoveK(int x,int y,ColorPed whoCheck);//torna vero quando il re non può muoversi
     bool checkCoordinates(int x,int y, bool start=true); // ->insertCoordinate
-    void substionPedone(int arrX, int arrY, std::list<Pieces *> color); // ->checkSubstionPedone
     void printCapture(std::list<Pieces*> color); // ->substiotionPedone
     bool checkScaccoMatto(ColorPed whoCheck); // ->checkScacco()
     bool checkScacco(ColorPed whoCheck); //->checkScaccoMatto
-    void insertCaptureB(Pieces * captured){
-        captureB.push_front(captured);
-    } // ->doMove
-    void insertCaptureW(Pieces * captured){
-        captureW.push_front(captured);
-    } // ->doMove
     Pieces* takeCaptureB(){
         Pieces* element= *(captureB.begin());
         captureB.pop_front();
@@ -90,7 +88,9 @@ private:
         captureW.pop_front();
         return element;
     } // ->cancelMove
-
+    void doMove(int startX,int startY,int arrX,int arrY); // ->checkScaccoMatto
+    void cancelMove(int startX,int startY,int arrX,int arrY); // ->checkScaccoMatto
+    void substitionPedone(std::list<Pieces *> color);// ->checkSubstitionPedone
 };
 
 #endif //INHERITANCE_CHESSBOARD_H
