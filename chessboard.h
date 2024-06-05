@@ -5,8 +5,8 @@
 #include "pieces.h"
 
 class Pieces;
-
 enum class ColorPed;
+
 
 class Chessboard{
 public:
@@ -73,7 +73,7 @@ private:
     std::list<Pieces*>captureW;
 
     // METHODS
-    bool canMoveK(int x,int y,ColorPed whoCheck);//torna vero quando il re non può muoversi
+    bool canMoveK(int x,int y,ColorPed whoCheck);// ->checkScaccoMatto
     bool checkCoordinates(int x,int y, bool start=true); // ->insertCoordinate
     void printCapture(std::list<Pieces*> color); // ->substiotionPedone
     bool checkScaccoMatto(ColorPed whoCheck); // ->checkScacco()

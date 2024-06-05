@@ -1,4 +1,6 @@
 #include "pieces.h"
+#include "chessboard.h"
+
 
 bool Pieces::destinationBox(const Chessboard &chess,const int x,const int y) {
     bool result=false;

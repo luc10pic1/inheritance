@@ -40,6 +40,12 @@ public:
     bool isCapture()const{
         return capture;
     }
+    int getX()const{
+        return x;
+    }
+    int getY()const{
+        return y;
+    }
 
 protected:
     ColorPed color;

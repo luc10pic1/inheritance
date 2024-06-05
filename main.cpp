@@ -83,7 +83,6 @@ int main() {
             chessboard.cancelMove();
             chessboard.insertCoordinate();
             chessboard.doMove();
-
         }
         if(chessboard.buffer[chessboard.getArrX()][chessboard.getArrY()]->isCapture()) {
             std::cout << "Pezzo catturato\n";
