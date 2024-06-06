@@ -3,6 +3,7 @@
 #include <iostream>
 #include <list>
 #include "pieces.h"
+#include "factoryBuffer.h"
 
 class Pieces;
 enum class ColorPed;
@@ -10,13 +11,14 @@ enum class ColorPed;
 
 class Chessboard{
 public:
-    explicit Chessboard(Pieces*array[8][8]){
+    explicit Chessboard(){
+        FactoryBuffer chessboard;
         for(int i=0;i<8;i++){
             for(int j=0;j<8;j++){
-                if(array[i][j])
-                    buffer[i][j]=array[i][j];
+                if(chessboard.buffer[i][j])
+                    this->buffer[i][j]=chessboard.buffer[i][j];
                 else
-                    buffer[i][j]=nullptr;
+                    this->buffer[i][j]=nullptr;
             }
         }
     };
