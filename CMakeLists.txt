@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_subdirectory(test)
 
-set(SOURCE_FILES pieces.cpp pieces.h chessboard.cpp chessboard.h)
+set(SOURCE_FILES pieces.cpp pieces.h chessboard.cpp chessboard.h ColorPed.h)
 add_executable(inheritance main.cpp)
 add_library(pieces ${SOURCE_FILES})
 target_link_libraries(inheritance pieces)
