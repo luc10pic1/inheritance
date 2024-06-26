@@ -4,7 +4,7 @@ project(inheritance)
 set(CMAKE_CXX_STANDARD 11)
 
 add_subdirectory(./lib/googletest)
-set(gtest_SOURCE_DIR, ./lib/googletest/)
+set(gtest_SOURCE_DIR ./lib/googletest/)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 set(SOURCE_TEST_FILES runAllTests.cpp testConstructorPiece.cpp testIsLegalMove.cpp testCheckScacco.cpp
